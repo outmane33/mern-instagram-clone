@@ -7,6 +7,7 @@ export const useUserStore = create((set, get) => ({
   loading: false,
   error: null,
   userProfile: null,
+  searchUsers: [],
 
   getSuggestedUsers: async () => {
     try {
@@ -44,6 +45,22 @@ export const useUserStore = create((set, get) => ({
         set({ userProfile: res.data.user });
         set({ loading: false, error: null });
         toast.success(res.data.message);
+      } else {
+        set({ loading: false, error: res.data.message });
+      }
+    } catch (error) {
+      set({ loading: false, error: error.response.data.message });
+    }
+  },
+  searchForUsers: async (username) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await axiosInstance.get(
+        `/api/v1/user/search-users?username=${username}`
+      );
+      if (res.data.status === "success") {
+        set({ searchUsers: res.data.users });
+        set({ loading: false, error: null });
       } else {
         set({ loading: false, error: res.data.message });
       }

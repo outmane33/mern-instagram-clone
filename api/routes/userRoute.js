@@ -9,6 +9,7 @@ const {
   followUnfollowUser,
   checkAuth,
   getUsers,
+  searchUsers,
 } = require("../controllers/userController");
 const { protect } = require("../middlewares/isAuthenticated");
 const {
@@ -31,5 +32,6 @@ router
   .route("/followorunfollow/:id")
   .post(protect, followUnfollowUserValidator, followUnfollowUser);
 router.route("/chat-users").get(protect, getUsers);
+router.route("/search-users").get(protect, searchUsers);
 
 module.exports = router;

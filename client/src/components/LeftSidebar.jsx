@@ -17,6 +17,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import NotificationExample from "./NotificationDrawer";
 import { useNotificationStore } from "../store/useNotificationStore";
+import SearchDrawer from "./SearchDrawer";
 
 export default function LeftSidebar() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function LeftSidebar() {
   const [isOpen, setIsOpenNotification] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shrink, setShrink] = useState(false);
+  const [isOpenSearch, setIsOpenSearch] = useState(false);
 
   const logoutHandler = async () => {
     logout();
@@ -73,6 +75,9 @@ export default function LeftSidebar() {
     if (text === "Notifications") {
       setShrink(!shrink);
       setIsOpenNotification(!isOpen);
+    } else if (text === "Search") {
+      setShrink(!shrink);
+      setIsOpenSearch(!isOpenSearch);
     }
   };
 
@@ -184,6 +189,11 @@ export default function LeftSidebar() {
       <NotificationExample
         isOpen={isOpen}
         setIsOpenNotification={setIsOpenNotification}
+      />
+      {/* search drawer */}
+      <SearchDrawer
+        isOpen={isOpenSearch}
+        onClose={() => setIsOpenSearch(false)}
       />
     </>
   );

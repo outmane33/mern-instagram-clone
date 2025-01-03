@@ -183,3 +183,19 @@ exports.getUsers = expressAsyncHandler(async (req, res, next) => {
     users,
   });
 });
+
+exports.searchUsers = expressAsyncHandler(async (req, res, next) => {
+  if (!req.query.username) {
+    return res.status(200).json({
+      status: "success",
+      users: [],
+    });
+  }
+  const users = await User.find({
+    username: { $regex: new RegExp("^" + req.query.username, "i") },
+  }).select("_id username profilePicture");
+  res.status(200).json({
+    status: "success",
+    users,
+  });
+});
