@@ -7,6 +7,7 @@ const { generateToken } = require("../utils/generateToken");
 const { sanitizeUser } = require("../utils/sanitizeData");
 const cloudinary = require("../utils/coudinary.js");
 const Notification = require("../models/notificationModel.js");
+const Post = require("../models/postModel.js");
 
 exports.register = expressAsyncHandler(async (req, res, next) => {
   const { username, email, password } = req.body;

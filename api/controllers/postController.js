@@ -5,6 +5,7 @@ const cloudinary = require("../utils/coudinary.js");
 const Post = require("../models/postModel.js");
 const Comment = require("../models/commentModel.js");
 const Notification = require("../models/notificationModel.js");
+const { getReceiverSocketId, io } = require("../utils/socket.js");
 
 exports.createPost = expressAsyncHandler(async (req, res) => {
   const { caption } = req.body;
@@ -96,12 +97,22 @@ exports.likeUnlikePost = expressAsyncHandler(async (req, res) => {
     post.likes.push(userId);
     await post.save();
 
-    await Notification.create({
-      relatedUser: userId,
-      recipient: post.author,
-      relatedPost: postId,
-      type: "like",
-    });
+    if (post.author.toString() !== userId.toString()) {
+      let notification = await Notification.create({
+        relatedUser: userId,
+        recipient: post.author,
+        relatedPost: postId,
+        type: "like",
+      });
+      notification = await notification.populate(
+        "relatedUser",
+        "username profilePicture"
+      );
+      const receiverSocketId = getReceiverSocketId(post.author);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("notification", notification || {});
+      }
+    }
 
     const updatedLikes = post.likes;
     res.status(200).json({
@@ -141,7 +152,13 @@ exports.createComment = expressAsyncHandler(async (req, res) => {
       relatedPost: postId,
       type: "comment",
     });
+    notification.populate("relatedUser", "username profilePicture");
     await notification.save();
+
+    const receiverSocketId = getReceiverSocketId(post.author);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("notification", notification || {});
+    }
   }
 
   res.status(201).json({

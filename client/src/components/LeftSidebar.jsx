@@ -16,10 +16,13 @@ import CreatePost from "./CreatePost";
 import { useAuthStore } from "../store/useAuthStore";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import NotificationExample from "./NotificationDrawer";
+import { useNotificationStore } from "../store/useNotificationStore";
 
 export default function LeftSidebar() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const { unreadNotifications, makeNotificationsRead, setUnreadNotifications } =
+    useNotificationStore();
   const [open, setOpen] = useState(false);
   const [isOpen, setIsOpenNotification] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,15 +76,20 @@ export default function LeftSidebar() {
     }
   };
 
+  const handleNotificationsRead = () => {
+    makeNotificationsRead();
+    setUnreadNotifications(0);
+  };
+
   return (
     <>
       {/* Desktop Sidebar */}
       <div
-        className={`hidden md:flex fixed top-0 z-[100] left-0 px-4 border-r border-gray-300 
+        className={`hidden md:flex fixed top-0 z-[30] left-0 px-4 border-r border-gray-300 
   ${shrink ? "w-20" : "w-[16%]"} 
   h-screen duration-300 ease-in-out`}
       >
-        <div className="flex flex-col w-full z-[100]">
+        <div className="flex flex-col w-full z-[30]">
           <h1 className="my-8 pl-3 font-bold text-xl">
             {shrink ? (
               <Instagram className="" />
@@ -99,9 +107,22 @@ export default function LeftSidebar() {
                 <div
                   onClick={() => {
                     handleSidebar(item.text);
+                    handleNotificationsRead();
                   }}
+                  className="relative"
                 >
                   {item.icon}
+                  {unreadNotifications > 0 && (
+                    <span
+                      className={`absolute top-[-8px] right-[-8px] w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center ${
+                        item.text === "Notifications"
+                          ? "opacity-100"
+                          : "opacity-0"
+                      }`}
+                    >
+                      {unreadNotifications}
+                    </span>
+                  )}
                 </div>
                 <span
                   className={`text-sm transition-opacity duration-300 ${
@@ -117,7 +138,7 @@ export default function LeftSidebar() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[100]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[30]">
         <div className="flex justify-around items-center h-16">
           {mobileNavItems.map((item, index) => (
             <button

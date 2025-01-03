@@ -9,12 +9,22 @@ export default function Home() {
   const location = useLocation();
   const { getAllPosts } = usePostStore();
   const { getSuggestedUsers } = useUserStore();
-  const { getNotifications } = useNotificationStore();
+  const {
+    getNotifications,
+    subscribeToNotifications,
+    unsubscribeFromMessages,
+  } = useNotificationStore();
   useEffect(() => {
     getAllPosts();
     getSuggestedUsers();
-    getNotifications();
   }, [location]);
+
+  useEffect(() => {
+    getNotifications();
+    subscribeToNotifications();
+    return () => unsubscribeFromMessages();
+  }, [getNotifications, subscribeToNotifications, unsubscribeFromMessages]);
+
   return (
     <div className="flex gap-4">
       <div className="flex-grow">
